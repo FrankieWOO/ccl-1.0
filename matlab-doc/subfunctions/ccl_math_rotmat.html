@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of ccl_math_rotmat</title>
+  <meta name="keywords" content="ccl_math_rotmat">
+  <meta name="description" content="R = ccl_math_rotmat(theta_k, current_Rn, search, alpha_id)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html v1.5 &copy; 2003-2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+</head>
+<body>
+<a name="_top"></a>
+<div><a href="../index.html">Home</a> &gt;  <a href="index.html">subfunctions</a> &gt; ccl_math_rotmat.m</div>
+
+<!--<table width="100%"><tr><td align="left"><a href="../index.html"><img alt="<" border="0" src="../left.png">&nbsp;Master index</a></td>
+<td align="right"><a href="index.html">Index for subfunctions&nbsp;<img alt=">" border="0" src="../right.png"></a></td></tr></table>-->
+
+<h1>ccl_math_rotmat
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>R = ccl_math_rotmat(theta_k, current_Rn, search, alpha_id)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function R = ccl_math_rotmat(theta_k, current_Rn, search, alpha_id) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> R = ccl_math_rotmat(theta_k, current_Rn, search, alpha_id)
+
+ Calculate rotation matrix after finding the k^th constraint vector.
+ The result is rotation matrix that rotate vectors into a space orthogonal to all constraint vectors
+
+ Input:
+   theta_k                               Theta from kth constrains
+   current_Rn                            Rotation matrix from the last iteration
+   search                                Dimensionality related searching parameters
+   alpha_id                              Current searching dimension of alpha
+
+ Output:
+   R                                     Rotation matrix</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="ccl_math_mgmat.html" class="code" title="function G = ccl_math_mgmat(dim, i, j, theta)">ccl_math_mgmat</a>	G = ccl_math_mgmat(dim, i, j, theta)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function R = ccl_math_rotmat(theta_k, current_Rn, search, alpha_id)</a>
+0002 <span class="comment">% R = ccl_math_rotmat(theta_k, current_Rn, search, alpha_id)</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% Calculate rotation matrix after finding the k^th constraint vector.</span>
+0005 <span class="comment">% The result is rotation matrix that rotate vectors into a space orthogonal to all constraint vectors</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Input:</span>
+0008 <span class="comment">%   theta_k                               Theta from kth constrains</span>
+0009 <span class="comment">%   current_Rn                            Rotation matrix from the last iteration</span>
+0010 <span class="comment">%   search                                Dimensionality related searching parameters</span>
+0011 <span class="comment">%   alpha_id                              Current searching dimension of alpha</span>
+0012 <span class="comment">%</span>
+0013 <span class="comment">% Output:</span>
+0014 <span class="comment">%   R                                     Rotation matrix</span>
+0015 
+0016 R = eye(search.dim_u) ;
+0017 <span class="keyword">for</span> d = alpha_id : search.dim_t
+0018     R = R * <a href="ccl_math_mgmat.html" class="code" title="function G = ccl_math_mgmat(dim, i, j, theta)">ccl_math_mgmat</a>(search.dim_u, d, d+1, theta_k(d) )' ;
+0019 <span class="keyword">end</span>
+0020 R = R * current_Rn ;
+0021 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Mon 01-Jan-2018 15:49:39 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" title="Matlab Documentation in HTML">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

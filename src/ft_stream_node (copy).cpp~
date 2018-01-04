@@ -1,0 +1,68 @@
+#include <ft_stream_node.h>
+myFT::myFT():cal_status(true)
+{
+    //request[8];			/* The request data sent to the Net F/T. */
+    //response[36];			/* The raw response data received from the Net F/T. */
+    struct sockaddr_in addr;	/* Address of Net F/T. */
+    struct hostent *he;			/* Host entry for Net F/T. */
+    char* netboxaddr = "192.168.1.1";
+    /* Calculate number of samples, command code, and open socket here. */
+    socketHandle = socket(AF_INET, SOCK_DGRAM, 0);
+    if (socketHandle == -1) {
+        exit(1);
+    }
+
+    *(uint16*)&request[0] = htons(0x1234); /* standard header. */
+    *(uint16*)&request[2] = htons(COMMAND); /* per table 9.1 in Net F/T user manual. */
+    *(uint32*)&request[4] = htonl(NUM_SAMPLES); /* see section 9.1 in Net F/T user manual. */
+
+    /* Sending the request. */
+    he = gethostbyname(netboxaddr);
+    memcpy(&addr.sin_addr, he->h_addr_list[0], he->h_length);
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(PORT);
+    err = ::connect( myFT::socketHandle, (struct sockaddr *)&addr, sizeof(addr) );
+    if (err == -1) {
+        exit(2);
+    }
+
+}
+myFT::~myFT(){}
+
+std::string myFT::run_once()
+{
+    send( socketHandle, request, 8, 0 ); // you can pass char * into something that expects a const char* without any
+                                               // explicit cast, however you can't do reverse. since it is unsafe.
+    /* Receiving the response. */
+    recv( socketHandle, response, 36, 0 );
+    resp.rdt_sequence = ntohl(*(uint32*)&response[0]);
+    resp.ft_sequence = ntohl(*(uint32*)&response[4]);
+    resp.status = ntohl(*(uint32*)&response[8]);
+    FTline.clear();
+    for( i = 0; i < 6; i++ ) {
+
+        resp.FTData[i] = ntohl(*(int32*)&response[12 + i * 4]);
+        if (cal_status == true)
+        {
+            FTdata_cal[i] = abs(resp.FTData[i]);
+        }
+        if(myFT::resp.FTData[i]>0)
+        {
+        FTString = std::to_string(myFT::resp.FTData[i]-FTdata_cal[i]);
+        FTline.append(FTString + std::string(2, ' '));
+        FTString.clear();
+        }
+        else
+        {
+            FTString = std::to_string(myFT::resp.FTData[i]-FTdata_cal[i]);
+            FTline.append(FTString + std::string(2, ' '));
+            FTString.clear();
+        }
+
+    }
+    cal_status = false;
+
+    return FTline;
+
+}
+
